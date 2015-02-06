@@ -30,5 +30,6 @@ public final class Controller implements ActionListener
 	public void actionPerformed(ActionEvent e)
 	{
 		graphics.frameCall();
+		player.frameCall();
 	}
 }

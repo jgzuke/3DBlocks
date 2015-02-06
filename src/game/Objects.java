@@ -12,18 +12,18 @@ public final class Objects
 	/*
 	 * object that stores a panel, the five points and color
 	 */
-	public class Panel
+	public class MyPanel
 	{
-		int [][] points;
-		int color;
-		public Panel(int [][] pointsSet, int colorSet)
+		int [][] points; // 
+		int panelIndex;
+		public MyPanel(int [][] pointsSet, int panelIndexSet)
 		{
 			points = pointsSet;
-			color = colorSet;
+			panelIndex = panelIndexSet;
 		}
 	}
 	// all panels must have a center as their last point
-	protected ArrayList<Panel> panels = new ArrayList<Panel>();
+	protected ArrayList<MyPanel> panels = new ArrayList<MyPanel>();
 	// each point is {x, y, z}
 	// everything is in cm for sizing.
 	public Objects(Controller controlSet)
@@ -78,7 +78,7 @@ public final class Objects
 				{x-150, y, z+161}, 
 				{x+37, y, z+161}
 			};
-		makePanel(addMid(arrow), 1);
+		makeMyPanel(addMid(arrow), 1);
 	}
 	private void makeJZ()
 	{
@@ -156,79 +156,79 @@ public final class Objects
 			{{500, -10, 296}, 	{500, -137, 296}, 	{550, -137, 296}, 	{550, -10, 296}},
 			{{500, -137, 296}, 	{500, 6, 119}, 		{550, 6, 119}, 		{550, -137, 296}},
 			{{500, 6, 119}, 	{500, 6, 69}, 		{550, 6, 69}, 		{550, 6, 119}}};
-		makePanel(addMid(jFront), 2);
-		makePanel(addMid(zFront), 2);
-		makePanel(addMid(jBack), 2);
-		makePanel(addMid(zBack), 2);
+		makeMyPanel(addMid(jFront), 2);
+		makeMyPanel(addMid(zFront), 2);
+		makeMyPanel(addMid(jBack), 2);
+		makeMyPanel(addMid(zBack), 2);
 		for(int i = 0; i < 11; i++)
 		{
-			makePanel(addMid(jS1[i]), 3);
+			makeMyPanel(addMid(jS1[i]), 3);
 		}
 		for(int i = 0; i < 10; i++)
 		{
-			makePanel(addMid(zS1[i]), 3);
+			makeMyPanel(addMid(zS1[i]), 3);
 		}
 	}
 	private int [][] addMid(int [][] panel)
 	{
-		int [][] newPanel = new int[panel.length+1][3];
+		int [][] newMyPanel = new int[panel.length+1][3];
 		int xSum = 0;
 		int ySum = 0;
 		int zSum = 0;
 		for(int i = 0; i < panel.length; i++)
 		{
-			newPanel[i][0] = panel[i][0];
-			newPanel[i][1] = panel[i][1];
-			newPanel[i][2] = panel[i][2];
+			newMyPanel[i][0] = panel[i][0];
+			newMyPanel[i][1] = panel[i][1];
+			newMyPanel[i][2] = panel[i][2];
 			xSum += panel[i][0];
 			ySum += panel[i][1];
 			zSum += panel[i][2];
 		}
-		newPanel[panel.length][0] = xSum/panel.length;
-		newPanel[panel.length][1] = ySum/panel.length;
-		newPanel[panel.length][2] = zSum/panel.length;
-		return newPanel;
+		newMyPanel[panel.length][0] = xSum/panel.length;
+		newMyPanel[panel.length][1] = ySum/panel.length;
+		newMyPanel[panel.length][2] = zSum/panel.length;
+		return newMyPanel;
 	}
 	private void makeCube(int x, int y, int z, int w, int color)
 	{
-		makePanel(x+w, y+w, z-w, x+w, y-w, z-w, x-w, y-w, z-w, x-w, y+w, z-w, color); // bottom
-		makePanel(x+w, y+w, z+w, x+w, y-w, z+w, x-w, y-w, z+w, x-w, y+w, z+w, color); // top
+		makeMyPanel(x+w, y+w, z-w, x+w, y-w, z-w, x-w, y-w, z-w, x-w, y+w, z-w, color); // bottom
+		makeMyPanel(x+w, y+w, z+w, x+w, y-w, z+w, x-w, y-w, z+w, x-w, y+w, z+w, color); // top
 		
-		makePanel(x+w, y+w, z-w, x+w, y-w, z-w, x+w, y-w, z+w, x+w, y+w, z+w, color); // left
-		makePanel(x-w, y+w, z-w, x-w, y-w, z-w, x-w, y-w, z+w, x-w, y+w, z+w, color); // right
+		makeMyPanel(x+w, y+w, z-w, x+w, y-w, z-w, x+w, y-w, z+w, x+w, y+w, z+w, color); // left
+		makeMyPanel(x-w, y+w, z-w, x-w, y-w, z-w, x-w, y-w, z+w, x-w, y+w, z+w, color); // right
 		
-		makePanel(x+w, y+w, z-w, x-w, y+w, z-w, x-w, y+w, z+w, x+w, y+w, z+w, color); // back
-		makePanel(x+w, y-w, z-w, x-w, y-w, z-w, x-w, y-w, z+w, x+w, y-w, z+w, color); // front
+		makeMyPanel(x+w, y+w, z-w, x-w, y+w, z-w, x-w, y+w, z+w, x+w, y+w, z+w, color); // back
+		makeMyPanel(x+w, y-w, z-w, x-w, y-w, z-w, x-w, y-w, z+w, x+w, y-w, z+w, color); // front
 	}
-	private void makePanel(int x1, int y1, int z1, int x2, int y2, int z2, int x3, int y3, int z3, int x4, int y4, int z4, int color)
+	private void makeMyPanel(int x1, int y1, int z1, int x2, int y2, int z2, int x3, int y3, int z3, int x4, int y4, int z4, int color)
 	{
-		int[][] newPanel = {{x1, y1, z1}, {x2, y2, z2}, {x3, y3, z3}, {x4, y4, z4}, 
+		int[][] newMyPanel = {{x1, y1, z1}, {x2, y2, z2}, {x3, y3, z3}, {x4, y4, z4}, 
 		{(x1+x2+x3+x4)/4, (y1+y2+y3+y4)/4, (z1+z2+z3+z4)/4}};
-		makePanel(newPanel, color);
+		makeMyPanel(newMyPanel, color);
 	}
-	private void makePanel(int [] x, int [] y, int [] z, int color)
+	private void makeMyPanel(int [] x, int [] y, int [] z, int color)
 	{
-		int[][] newPanel = new int[x.length+1][3];
+		int[][] newMyPanel = new int[x.length+1][3];
 		int xSum = 0;
 		int ySum = 0;
 		int zSum = 0;
 		for(int i = 0; i < x.length; i++)
 		{
-			newPanel[i][0] = x[i];
-			newPanel[i][1] = y[i];
-			newPanel[i][2] = z[i];
+			newMyPanel[i][0] = x[i];
+			newMyPanel[i][1] = y[i];
+			newMyPanel[i][2] = z[i];
 			xSum += x[i];
 			ySum += y[i];
 			zSum += z[i];
 		}
-		newPanel[x.length][0] = xSum/x.length;
-		newPanel[x.length][1] = ySum/x.length;
-		newPanel[x.length][2] = zSum/x.length;
-		makePanel(newPanel, color);
+		newMyPanel[x.length][0] = xSum/x.length;
+		newMyPanel[x.length][1] = ySum/x.length;
+		newMyPanel[x.length][2] = zSum/x.length;
+		makeMyPanel(newMyPanel, color);
 	}
-	private void makePanel(int [][] points, int color)
+	private void makeMyPanel(int [][] points, int color)
 	{
-		Panel p = new Panel(points, color);
+		MyPanel p = new MyPanel(points, color);
 		panels.add(p);
 	}
 }

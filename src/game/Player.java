@@ -43,6 +43,7 @@ public final class Player
 	 */
 	protected void frameCall()
 	{
+		hRotation +=0.01;
 		if(zRotation > Math.PI/3) zRotation = Math.PI/3;
 		if(zRotation > Math.PI/3) zRotation = Math.PI/3;
 		z += zVel * 10;
