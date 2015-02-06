@@ -175,11 +175,11 @@ public final class Drawer extends JPanel
 				double [] temp = getScreenPoint(panel.points[i].location);
 				locations[0][count] = (int)temp[0];
 				locations[1][count] = (int)temp[1];
-				/*if(locations[0][count]==0 && locations[1][count]==0)
+				if(Double.isNaN(locations[0][count]))
 				{
 					System.out.println("x: " + Double.toString(temp[0]));
 					System.out.println("y: " + Double.toString(temp[1]));
-				}*/
+				}
 				count++;
 			}
 		}
@@ -221,6 +221,7 @@ public final class Drawer extends JPanel
 	 */
 	protected double [] getScreenPoint(double [] coordinates)
 	{
+		if(coordinates[0]==0) coordinates[0] += 0.00001;
 		double [] ratios = {coordinates[1]/coordinates[0], coordinates[2]/coordinates[0]};
 		double [] point = {halfScreenSize*ratios[0], halfScreenSize*ratios[1]};
 		double [] pointTilted = {	(Math.cos(tRot)*point[0]) - (Math.sin(tRot)*point[1]),
@@ -382,10 +383,6 @@ public final class Drawer extends JPanel
 					location = p2;
 				}
 			}
-			if((int)location[0]==0&&(int)location[1]==0)
-			{
-				System.out.println("foundtheerror");
-			}
 	    }
 	    /**
 	     * constructor for point made by branch
@@ -404,12 +401,17 @@ public final class Drawer extends JPanel
 	     */
 	    private double[] getCorner(double [] point, double [] next, double [] prev)
 	    {
-	    	double [] corner = {10000, point[1]/Math.abs(point[1])*20000, point[2]/Math.abs(point[2])*20000};	// x and y
+	    	int xAbove = 1;
+	    	int yAbove = 1;
+	    	if(point[1]<0) yAbove = -1;
+	    	if(point[0]<0) xAbove = -1;
+	    	double [] corner = {10000, yAbove*20000, xAbove*20000};	// x and y
 	    	double [] v1 = {point[0]-next[0], point[1]-next[1], point[2]-next[2]};
 	    	double [] v2 = {point[0]-prev[0], point[1]-prev[1], point[2]-prev[2]};
 	    	double [] norm = {(v1[1]*v2[2])-(v1[2]*v2[1]), (v1[2]*v2[0])-(v1[0]*v2[2]), (v1[0]*v2[1])-(v1[1]*v2[0])};
 	    	double k = (v1[0]*norm[0]) + (v1[1]*norm[1]) + (v1[2]*norm[2]);
 	    	double b = (corner[0]*norm[0]) + (v1[1]*corner[1]) + (v1[2]*corner[2]);
+	    	if(b == 0) b+=0.00001;
 	    	double ratio = k/b;
 	    	double [] intercept = {corner[0]*ratio, corner[1]*ratio, corner[2]*ratio};
 	    	return intercept;
@@ -508,10 +510,13 @@ public final class Drawer extends JPanel
 	     */
 	    protected double pointCollision(double [] start1, double [] end1, double [] start2, double [] end2)
 	    {
+	    	if((end1[0]-start1[0]) == 0) end1[0]+=0.00001;
+	    	if((end2[0]-start2[0]) == 0) end2[0]+=0.00001;
 	    	double M1 = (end1[1]-start1[1])/(end1[0]-start1[0]); // convert to y=mx+b form
 	    	double M2 = (end2[1]-start2[1])/(end2[0]-start2[0]); // convert to y=mx+b form
 	    		//	m1(x-x1)+y1 = m2(x-x2)+y2           x1:start1[0], y1:start1[1]
 	    		//	x = (y2 - y1 + m1x1 - m2x2)/(m1 - m2)
+	    	if(M1-M2 == 0) M1+=0.00001;
 	    	double x = (start2[1]-start1[1] + (M1*start1[0]) - (M2*start2[0]))/(M1 - M2);
 	    		//	y = m1*(x-x1)+y1
 	    	double y = M1*(x - start1[0]) + start1[1];
@@ -532,7 +537,7 @@ public final class Drawer extends JPanel
 	    		if(x>end2[0] || x<start2[0]) return 2;
 	    	}
 	    	// the distance as a decimal can be found by (colx-startx)/(endx-startx)
-	    	
+	    	if((end2[0]-start2[0]) == 0) end2[0]+=0.00001;
 	    	return (collision[0]-start2[0])/(end2[0]-start2[0]);
 	    }
 	}

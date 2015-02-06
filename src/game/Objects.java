@@ -35,12 +35,12 @@ public final class Objects
 	{
 		int a = 10000;
 		makeJZ();
-		makeArrow(500, 0, 0);
-		makeArrow(-500, 0, 0);
-		makeArrow(500, -1500, 0);
-		makeArrow(-500, -1500, 0);
-		makeArrow(500, -2500, 0);
-		makeArrow(-500, -2500, 0);
+		makeArrow(500, 0, 10);
+		makeArrow(-500, 0, 10);
+		//makeArrow(500, -1500, 10);
+		//makeArrow(-500, -1500, 10);
+		//makeArrow(500, -2500, 10);
+		//makeArrow(-500, -2500, 10);
 		makeCube(425, 200, 50, 50, 0);
 		makeCube(825, 200, 50, 50, 0);
 		makeCube(425, -200, 50, 50, 0);
