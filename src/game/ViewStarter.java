@@ -5,6 +5,7 @@ class Main
 {
 	public static void main(String [] args){
 		JFrame jf=new JFrame("Graphics Panel");
+		jf.setUndecorated(true);
 		jf.setLayout(new GridLayout(2, 1));
 		jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		Controller control = new Controller();

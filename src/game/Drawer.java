@@ -4,34 +4,31 @@ import game.Objects.MyPanel;
 import java.awt.*;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
-import java.awt.event.*;
-import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
-import java.awt.image.BufferedImage;
-import java.awt.image.ImageObserver;
 import java.util.ArrayList;
 import java.util.List;
 
 public final class Drawer extends JPanel
 {
-	private int levelWidth = 1200;
-	private int levelHeight = 1200;
+	private int levelWidth = 600;
+	private int levelHeight = 600;
 	private Controller control;
 	
 	private double x, y, z;
 	private double hRot, zRot, tRot;
 	
-	private int screenSize = 4000;
+	private int screenSize = 2000;
 	private int halfScreenSize = screenSize/2;
 	private double zoom = 1;
 	public Drawer(Controller ControlSet)
 	{
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		levelWidth = (int)screenSize.getWidth();
+		levelHeight = (int)screenSize.getHeight();
 		setFocusable(true);
 		requestFocusInWindow();
 		setBackground(Color.WHITE);
+		
 		setSize(new Dimension(levelWidth, levelHeight));
 		setMinimumSize(new Dimension(levelWidth, levelHeight));
 		setPreferredSize(new Dimension(levelWidth, levelHeight));
@@ -50,17 +47,6 @@ public final class Drawer extends JPanel
 		//	testing = (screenHeight)/(2*Math.tan(rotToMyPanelTop)*distanceFromMyPanel)
 		g.translate((int)(levelWidth/2), (int)(levelHeight/2));
 		
-		
-		/*Path path = new Path();
-		path.moveTo(-5000, 0);//(float)-Math.sin(tRot)*5000);	// top left
-		path.lineTo(5000, 0);//(float)Math.sin(tRot)*5000);	// top right
-		path.lineTo(5000, 5000);	// bot right
-		path.lineTo(5000, -5000);	// bot left
-		path.lineTo(-5000, 0);//(float)-Math.sin(tRot)*5000);	// top left
-		paint.setStyle(Style.FILL);
-		paint.setColor(Color.GREEN);
-		g.drawPath(path, paint);*/
-		
 		ArrayList<MyPanel> panels = (ArrayList<MyPanel>) control.objects.panels;
 		int [] orderToDraw = orderMyPanels(panels);
 		for(int i = 0; i < panels.size(); i++)
@@ -69,7 +55,19 @@ public final class Drawer extends JPanel
 		}
 	}
 	
-
+	private Color indexToColor(int index)
+	{
+		switch(index)
+		{
+		case 0:
+			return Color.BLUE;
+		case 1:
+			return Color.GREEN;
+		case 2:
+			return Color.RED;
+		}
+		return Color.BLACK;
+	}
 	
 	
 	
@@ -137,18 +135,13 @@ public final class Drawer extends JPanel
 	 */
 	protected void drawMyPanel(MyPanel panel, Graphics g)
 	{
-		ArrayList<double[]> p = getScreenPointSet(panel.points);	// and returns rotations to points
-		if(p != null && p.size() > 0)
+		int[][] p = getScreenPointSet(panel.points);	// and returns rotations to points
+		if(p != null && p.length > 0)
 		{
-			int length = p.size();
-			int xPoly[] = new int[length];
-		    int yPoly[] = new int[length];
-		    for(int i = 0; i < length; i++)
-		    {
-		    	xPoly[i] = (int)p.get(i)[0];
-		    	yPoly[i] = (int)p.get(i)[1];
-		    }
+			int xPoly[] = p[0];
+		    int yPoly[] = p[1];
 		    Polygon poly = new Polygon(xPoly, yPoly, xPoly.length);
+		    g.setColor(indexToColor(panel.panelIndex));
 		    g.drawPolygon(poly);
 		    g.fillPolygon(poly);
 		}
@@ -158,7 +151,7 @@ public final class Drawer extends JPanel
 	 * @param rotations	the rotations to fix
 	 * @param view		the view to fit rotations into
 	 */
-	protected ArrayList<double[]> getScreenPointSet(int[][] panelSet)
+	protected int[][] getScreenPointSet(int[][] panelSet)
 	{
 		double [][] panelSetDouble = new double[panelSet.length][3];
 		for(int i = 0 ; i < panelSet.length; i++)
@@ -167,15 +160,30 @@ public final class Drawer extends JPanel
 		}
 		MyPanelWithVectors panel = new MyPanelWithVectors(panelSetDouble, this);
 		if(panel.panel == null) return null;
-		ArrayList<double[]> p = new ArrayList<double[]>();
+		
+		int count = 0;
 		for(int i = 0; i < (panelSet.length-1)*3; i++)
 		{
-			if(panel.points[i] != null)
+			if(panel.points[i] != null) count ++;
+		}
+		int [][] locations = new int[2][count];
+		count = 0;
+		for(int i = 0; i < (panelSet.length-1)*3; i++)
+		{
+			if(panel.points[i] != null)//TODO working here)
 			{
-				p.add(getScreenPoint(panel.points[i].location));
+				double [] temp = getScreenPoint(panel.points[i].location);
+				locations[0][count] = (int)temp[0];
+				locations[1][count] = (int)temp[1];
+				/*if(locations[0][count]==0 && locations[1][count]==0)
+				{
+					System.out.println("x: " + Double.toString(temp[0]));
+					System.out.println("y: " + Double.toString(temp[1]));
+				}*/
+				count++;
 			}
 		}
-		return p;
+		return locations;
 	}
 	protected double [] intToDoubleArray(int [] start)
 	{
@@ -214,8 +222,7 @@ public final class Drawer extends JPanel
 	protected double [] getScreenPoint(double [] coordinates)
 	{
 		double [] ratios = {coordinates[1]/coordinates[0], coordinates[2]/coordinates[0]};
-		double [] point = {halfScreenSize*ratios[0], 
-								halfScreenSize*ratios[1]};
+		double [] point = {halfScreenSize*ratios[0], halfScreenSize*ratios[1]};
 		double [] pointTilted = {	(Math.cos(tRot)*point[0]) - (Math.sin(tRot)*point[1]),
 									(Math.sin(tRot)*point[0]) + (Math.cos(tRot)*point[1])};
 		return pointTilted;
@@ -353,7 +360,6 @@ public final class Drawer extends JPanel
 	    	index *= 3;
 			if(!panel.pointOnScreen(location))
 			{
-				//TODO
 				double [] p1 = getIntercept(location, previous);
 				double [] p2 = getIntercept(location, next);
 				double [] p3 = getCorner(location, next, previous);
@@ -375,6 +381,10 @@ public final class Drawer extends JPanel
 				{
 					location = p2;
 				}
+			}
+			if((int)location[0]==0&&(int)location[1]==0)
+			{
+				System.out.println("foundtheerror");
 			}
 	    }
 	    /**
@@ -435,6 +445,15 @@ public final class Drawer extends JPanel
 			
 	    	//Now we have a bunch of lines between points
 	    	//we need to check if they hit within their domains
+	    	
+	    	if((int)start[0]==0&&(int)start[1]==0)
+			{
+				System.out.println("foundtheerror start");
+			}
+	    	if((int)end[0]==0&&(int)end[1]==0)
+			{
+				System.out.println("foundtheerror end");
+			}
 	    	
 	    	double [] hitSides = new double[4]; // right, left, top, bot
 	    	hitSides[0] = pointCollision(origin, playerRight, startXY, endXY);
